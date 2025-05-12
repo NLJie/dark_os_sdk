@@ -10,7 +10,7 @@ export PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 export BUILD_DIR="${PROJECT_ROOT:-$(pwd)}/build"
 export OUTPUT_DIR="${BUILD_DIR}/output"
 
-D21x_TOOLCHAIN_PATH="${PROJECT_ROOT}/tools/toolchains/riscv64-linux-glibc-x86_64-V2.10.1.tar.gz"
+D21x_TOOLCHAIN_PATH="${PROJECT_ROOT}/toolchains/riscv64-linux-glibc-x86_64-V2.10.1.tar.gz"
 
 # 根据平台设置工具链路径和编译器
 setup_toolchain() {
@@ -24,23 +24,13 @@ setup_toolchain() {
             export OBJCOPY="arm-none-eabi-objcopy"
             export SIZE="arm-none-eabi-size"
             ;;
-        esp32)
-            # ESP32 工具链配置
-            # export TOOLCHAIN_PATH="${TOOLCHAIN_PATH:-${PROJECT_ROOT/tools/toolchains}/riscv64-linux-glibc-x86_64-V2.10.1}"
-            export TOOLCHAIN_PATH="${TOOLCHAIN_PATH:-${PROJECT_ROOT}/tools/toolchains/riscv64-linux-glibc-x86_64-V2.10.1}"
-            export CC="xtensa-esp32-elf-gcc"
-            export CXX="xtensa-esp32-elf-g++"
-            export AR="xtensa-esp32-elf-ar"
-            export OBJCOPY="xtensa-esp32-elf-objcopy"
-            export SIZE="xtensa-esp32-elf-size"
-            ;;
         d21x)
             # D21x 工具链配置
             if [ -f "$D21x_TOOLCHAIN_PATH" ]; then
                 print_info "工具链文件存在: $D21x_TOOLCHAIN_PATH"
-                if [ ! -d "${PROJECT_ROOT}/tools/toolchains/riscv64-linux-glibc-x86_64-V2.10.1" ]; then
+                if [ ! -d "${PROJECT_ROOT}/toolchains/riscv64-linux-glibc-x86_64-V2.10.1" ]; then
                     print_info "解压工具链..."
-                    tar -xvf "$D21x_TOOLCHAIN_PATH" -C "${PROJECT_ROOT}/tools/toolchains/"
+                    tar -xvf "$D21x_TOOLCHAIN_PATH" -C "${PROJECT_ROOT}/toolchains/"
                 fi
                 print_success "工具链解压完成"
             else
@@ -48,7 +38,7 @@ setup_toolchain() {
                 exit 1
             fi
         
-            export TOOLCHAIN_PATH="${TOOLCHAIN_PATH:-${PROJECT_ROOT}/tools/toolchains/riscv64-linux-glibc-x86_64-V2.10.1}"
+            export TOOLCHAIN_PATH="${TOOLCHAIN_PATH:-${PROJECT_ROOT}/toolchains/riscv64-linux-glibc-x86_64-V2.10.1}"
             export CC="riscv64-unknown-linux-gnu-gcc"
             export CXX="riscv64-unknown-linux-gnu-g++"
             export AR="riscv64-unknown-linux-gnu-ar"
@@ -90,34 +80,17 @@ export LVGL_DIR="${PROJECT_ROOT}/source/lvgl"
 export LVGL_CONFIG_FILE="${PROJECT_ROOT}/configs/lv_conf.h"
 
 # 平台特定库配置
-setup_platform_libs() {
+setup_platform_arch() {
     case "$PLATFORM" in
         arm)
             # ARM 平台特定库
-            export LCD_LIB="${PROJECT_ROOT}/libs/arm/lcd"
-            export INPUT_LIB="${PROJECT_ROOT}/libs/arm/input"
+            export LCD_LIB="${PROJECT_ROOT}/arch/arm/lcd"
+            export INPUT_LIB="${PROJECT_ROOT}/arch/arm/input"
             ;;
         d21x)
             # D21x 平台特定库
-            export ESP_IDF_PATH="${ESP_IDF_PATH:-/opt/esp/esp-idf}"
-            export LCD_LIB="${PROJECT_ROOT}/libs/D21x/lcd"
-            export INPUT_LIB="${PROJECT_ROOT}/libs/D21x/input"
-            ;;
-        esp32)
-            # ESP32 平台特定库
-            export ESP_IDF_PATH="${ESP_IDF_PATH:-/opt/esp/esp-idf}"
-            export LCD_LIB="${PROJECT_ROOT}/libs/esp32/lcd"
-            export INPUT_LIB="${PROJECT_ROOT}/libs/esp32/input"
-            ;;
-        riscv)
-            # RISC-V 平台特定库
-            export LCD_LIB="${PROJECT_ROOT}/libs/riscv/lcd"
-            export INPUT_LIB="${PROJECT_ROOT}/libs/riscv/input"
-            ;;
-        x86)
-            # x86 平台特定库
-            export LCD_LIB="${PROJECT_ROOT}/libs/x86/lcd"
-            export INPUT_LIB="${PROJECT_ROOT}/libs/x86/input"
+            export LCD_LIB="${PROJECT_ROOT}/arch/D21x/lcd"
+            export INPUT_LIB="${PROJECT_ROOT}/arch/D21x/input"
             ;;
     esac
 }
@@ -159,11 +132,6 @@ verify_environment() {
         exit 1
     fi
     
-    if [ ! -d "$INPUT_LIB" ]; then
-        print_error "平台特定输入库未找到: $INPUT_LIB"
-        exit 1
-    fi
-    
     print_success "环境验证通过"
 }
 
@@ -171,19 +139,19 @@ verify_environment() {
 initialize() {
 
     # 检查应用程序变量
-    APP_DIR="${PROJECT_ROOT}/Application/${APPLICATION}"
+    APP_DIR="${PROJECT_ROOT}/app/${APPLICATION}"
     if [ -z "$APPLICATION" ]; then
         print_error "应用程序名称未设置，请使用 -a 选项指定应用程序"
         print_error "应用程序目录未找到: $APP_DIR"
         # 列出可用的应用程序目录
         echo "可用的应用程序目录:"
-        find "${PROJECT_ROOT}/Application" -maxdepth 1 -type d | sed 's|.*/||' | grep -v '^.$'
+        find "${PROJECT_ROOT}/app" -maxdepth 1 -type d | sed 's|.*/||' | grep -v '^.$'
         exit 1
     elif [ ! -d "$APP_DIR" ]; then
         print_error "应用程序目录未找到: $APP_DIR"
         # 列出可用的应用程序目录
         echo "可用的应用程序目录:"
-        find "${PROJECT_ROOT}/Application" -maxdepth 1 -type d | sed 's|.*/||' | grep -v '^.$'
+        find "${PROJECT_ROOT}/app" -maxdepth 1 -type d | sed 's|.*/||' | grep -v '^.$'
         exit 1
     fi
     # print_success "应用程序目录: $APP_DIR"
@@ -221,7 +189,7 @@ initialize() {
 # 主函数
 main() {
     setup_toolchain
-    setup_platform_libs
+    setup_platform_arch
     verify_environment
     initialize
     
