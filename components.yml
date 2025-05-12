@@ -1,0 +1,21 @@
+# components.yml 示例
+components:
+  - name: "dark_mqtt"
+    repo: "https://github.com/NLJie/dark_mqtt.git"
+    version: "main"     # 可以是分支名、标签名或提交哈希
+    destination: "components/dark_mqtt"
+    
+  - name: "dark_audio_player"
+    repo: "git@github.com:NLJie/dark_audio_player.git"
+    version: "main"
+    destination: "components/dark_audio_player"
+    
+  - name: "dark_serial"
+    repo: "git@github.com:NLJie/dark_serial.git"
+    version: "main"
+    destination: "components/dark_serial"
+
+  # - name: "dark_serial"
+  #   repo: "git@github.com:NLJie/dark_serial.git"
+  #   version: "a1b2c3d"  # 提交哈希
+  #   destination: "components/dark_serial"
