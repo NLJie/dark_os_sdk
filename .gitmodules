@@ -1,0 +1,6 @@
+[submodule "source/lvgl"]
+	path = source/lvgl
+	url = https://github.com/lvgl/lvgl.git
+[submodule "toolchains"]
+	path = toolchains
+	url = https://github.com/NLJie/toolchains.git
