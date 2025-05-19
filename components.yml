@@ -6,12 +6,12 @@ components:
     destination: "components/dark_mqtt"
     
   - name: "dark_audio_player"
-    repo: "git@github.com:NLJie/dark_audio_player.git"
+    repo: "https://github.com/NLJie/dark_audio_player.git"
     version: "main"
     destination: "components/dark_audio_player"
     
   - name: "dark_serial"
-    repo: "git@github.com:NLJie/dark_serial.git"
+    repo: "https://github.com/NLJie/dark_serial.git"
     version: "main"
     destination: "components/dark_serial"
 

@@ -8,13 +8,11 @@
 ## 🛠️ 快速开始
 
 ```
-git clone https://github.com/NLJie/dark_os_sdk.git
-
-cd dark_os_sdk
+git clone https://github.com/NLJie/dark_os_sdk.git && cd dark_os_sdk
 
 ./scripts/run_component_manager.sh
 
-git submodule update --init --recursive
+git submodule update --init --recursive --progress
 
 ./build.sh -p d21x -a P001_D21x_basic_demo
 
