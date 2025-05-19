@@ -76,7 +76,7 @@ setup_toolchain() {
 }
 
 # LVGL 相关配置
-export LVGL_DIR="${PROJECT_ROOT}/source/lvgl"
+export LVGL_DIR="${PROJECT_ROOT}/components/dark_lvgl"
 export LVGL_CONFIG_FILE="${PROJECT_ROOT}/configs/lv_conf.h"
 
 # 平台特定库配置
@@ -89,7 +89,7 @@ setup_platform_arch() {
             ;;
         d21x)
             # D21x 平台特定库
-            export LCD_LIB="${PROJECT_ROOT}/arch/D21x/lcd"
+            export LCD_LIB="${PROJECT_ROOT}/device/aix_d21x/lcd"
             export INPUT_LIB="${PROJECT_ROOT}/arch/D21x/input"
             ;;
     esac

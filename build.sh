@@ -4,10 +4,10 @@ export PLATFORM=arm  # 默认平台
 export VERBOSE=0
 export CLEAN=0
 
-source "$(dirname "$0")/scripts/help.sh"
+source "$(dirname "$0")/tools/help.sh"
 
 # 加载工具函数
-source "$(dirname "$0")/scripts/utils.sh"
+source "$(dirname "$0")/tools/utils.sh"
 
 clean() {
     rm -rf build
@@ -35,4 +35,4 @@ done
 print_welcome_header
 
 # 加载环境配置
-source "$(dirname "$0")/scripts/env_setup.sh"
+source "$(dirname "$0")/tools/env_setup.sh"
